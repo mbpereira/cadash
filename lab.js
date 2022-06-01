@@ -5,19 +5,19 @@ const inputFile = join('./', 'files', 'survey_results_public.csv')
 const outputFile = inputFile.concat('.tmp')
 
 createFileProcessor({ input: inputFile })
-	.transform(line => {
-		processedLine = line + '\n'
-		const matches = processedLine.match(/"(.*?)"/ig)
-		if (Array.isArray(matches))
-			matches.forEach(m => processedLine = processedLine.replace(m, m.replace(/,/ig, ' -')))
-		return processedLine
-	})
-	.process()
-	.onFinish(data => {
-		const { chunks, originalChunks } = data
-		console.log(`${originalChunks.length} linhas lidas`)
-		console.log(`${chunks.length} linhas processadas`)
-	})
+  .transform(line => {
+    processedLine = line + '\n'
+    const matches = processedLine.match(/"(.*?)"/ig)
+    if (Array.isArray(matches))
+      matches.forEach(m => processedLine = processedLine.replace(m, m.replace(/,/ig, ' -')))
+    return processedLine
+  })
+  .process()
+  .onFinish(data => {
+    const { chunks, originalChunks } = data
+    console.log(`${originalChunks.length} linhas lidas`)
+    console.log(`${chunks.length} linhas processadas`)
+  })
 
 // const process = filepath => new Promise((res, rej) => {
 // 	const ext = getFileExtension(filepath)

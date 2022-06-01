@@ -1,5 +1,5 @@
 module.exports = {
-	mapRoutes: (req, res, next) => {
+  mapRoutes: (req, res, next) => {
 
-	}
+  }
 }

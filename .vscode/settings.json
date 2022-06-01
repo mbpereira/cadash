@@ -1,9 +1,9 @@
 {
-	"editor.tabSize": 2,
-	"editor.formatOnSave": true,
-	"editor.detectIndentation": false,
-	"editor.insertSpaces": false,
-	"editor.renderWhitespace": "all",
-	"javascript.preferences.quoteStyle": "single",
-	"editor.formatOnSaveMode": "file",
+  "editor.tabSize": 2,
+  "editor.formatOnSave": true,
+  "editor.detectIndentation": false,
+  "editor.insertSpaces": true,
+  "editor.renderWhitespace": "all",
+  "javascript.preferences.quoteStyle": "single",
+  "editor.formatOnSaveMode": "file",
 }

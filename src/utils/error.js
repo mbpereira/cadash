@@ -1,5 +1,5 @@
 module.exports = {
-	parse: e => {
-		return e
-	}
+  parse: e => {
+    return e
+  }
 }

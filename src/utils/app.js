@@ -1,3 +1,3 @@
 module.exports = {
-	createApiRoute: path => `/api/${path}`
+  createApiRoute: path => `/api/${path}`
 }
