@@ -12,7 +12,6 @@ createFileProcessor({ input: inputFile })
 			matches.forEach(m => processedLine = processedLine.replace(m, m.replace(/,/ig, ' -')))
 		return processedLine
 	})
-	.writeTo({ output: outputFile })
 	.process()
 	.onFinish(data => {
 		const { chunks, originalChunks } = data
