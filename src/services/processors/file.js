@@ -46,7 +46,7 @@ const createFileProcessor = ({ input, inputEncoding = 'utf-8' }) => {
 			return processor
 		},
 		onFinish: cb => {
-			_onFinish = () => cb({ originalChunks, chunks })
+			_onFinish = () => typeof cb === 'function' && cb({ originalChunks, chunks })
 			return processor
 		}
 	}
