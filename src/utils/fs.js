@@ -33,7 +33,7 @@ const mv = (src, dest) => new Promise((res, rej) => {
 const getFileExtension = filename => filename.match(/\.[0-9a-z]+$/i)[0]
 
 module.exports = {
-	getAllFilesFromDirectory: getAllFileNamesFromDirectory,
+	getAllFileNamesFromDirectory,
 	readline,
 	mv,
 	getFileExtension

@@ -1,7 +1,7 @@
 const express = require('express')
 const server = express()
 const { join } = require('path')
-const { getAllFilesFromDirectory } = require('./utils/fs')
+const { getAllFileNamesFromDirectory } = require('./utils/fs')
 
 const controllersPath = join(__dirname, 'controllers')
 const port = process.env.PORT
@@ -25,10 +25,12 @@ const mapMiddlewares = middlewares =>
 		.forEach(middleware => server.use(middleware))
 
 const run = async () => {
-	const controllers = await getAllFilesFromDirectory(controllersPath)
+	const controllers = await getAllFileNamesFromDirectory(controllersPath)
+
 	mapMiddlewares(startMiddlewares)
 	mapControllers(controllers)
 	mapMiddlewares(endMiddlewares)
+
 	server.listen(port, () => console.log(`Running on port ${port}`))
 }
 
