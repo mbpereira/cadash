@@ -1,5 +1,5 @@
 const { join } = require('path')
-const { mv, getFileExtension } = require('../utils/fs')
+const { getFileExtension, move } = require('../utils/fs')
 
 const uploadPath = process.env.UPLOAD_DIR
 
@@ -10,7 +10,7 @@ const filesService = () => ({
     let filename = file.originalFilename
     if (newFilenameWithoutExtension)
       filename = newFilenameWithoutExtension + ext
-    await mv(original, join(uploadPath, filename))
+    await move(original, join(uploadPath, filename))
   }
 })
 
