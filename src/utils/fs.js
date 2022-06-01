@@ -1,4 +1,4 @@
-const { readdir, createReadStream, cp, rm } = require('fs')
+const { readdir, createReadStream, cp, rm, rename } = require('fs')
 const { createInterface } = require('readline')
 
 const getAllFileNamesFromDirectory = (path, includeDirectories) => new Promise((res, rej) => {
@@ -11,23 +11,47 @@ const getAllFileNamesFromDirectory = (path, includeDirectories) => new Promise((
 const readline = (path, encoding = 'utf8') => {
 	const stream = createReadStream(path, { encoding })
 	const reader = createInterface({ input: stream })
-	return reader
+
+	const _readline = {
+		getInterface: () => reader,
+		getStream: () => stream,
+		onLine: cb => {
+			reader.on('line', cb)
+			return _readline
+		},
+		onClose: cb => {
+			reader.on('close', cb)
+			return _readline
+		},
+	}
+
+	return _readline
 }
 
-const mv = (src, dest) => new Promise((res, rej) => {
-	try {
+const copy = (src, dest) => new Promise((res, rej) => {
+	cp(src, dest, err => {
+		if (err) return rej(err)
+		res()
+	})
+})
 
-		cp(src, dest, err => {
-			if (err) throw err
+const remove = filepath => new Promise((res, rej) => {
+	rm(filepath, err => {
+		if (err) return rej(err)
+		res()
+	})
+})
 
-			rm(src, err => {
-				if (err) throw err
-				res()
-			})
-		})
-	} catch (e) {
-		rej(e)
-	}
+const move = async (src, dest) => {
+	await copy(src, dest)
+	await remove(src)
+}
+
+const _rename = (src, dest) => new Promise((res, rej) => {
+	rename(src, dest, err => {
+		if (err) return rej(err)
+		res()
+	})
 })
 
 const getFileExtension = filename => filename.match(/\.[0-9a-z]+$/i)[0]
@@ -35,6 +59,9 @@ const getFileExtension = filename => filename.match(/\.[0-9a-z]+$/i)[0]
 module.exports = {
 	getAllFileNamesFromDirectory,
 	readline,
-	mv,
-	getFileExtension
+	move,
+	copy,
+	remove,
+	getFileExtension,
+	rename: _rename
 }

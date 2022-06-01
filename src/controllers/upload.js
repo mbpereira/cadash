@@ -1,7 +1,9 @@
 const { parse } = require('../utils/error')
-const formidable = require('formidable')
 const { createApiRoute } = require('../utils/app')
-const { saveFile } = require('../services/uploadService')()
+const formidable = require('formidable')
+const uploadService = require('../services/upload')
+
+const { saveFile } = uploadService()
 
 const filesController = () => ({
 	post: async (req, res, next) => {
