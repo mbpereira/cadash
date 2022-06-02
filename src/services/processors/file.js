@@ -3,7 +3,7 @@ const { readline } = require('../../utils/fs')
 
 const createFileProcessor = ({ input, inputEncoding = 'utf-8' }) => {
   const transformers = [], chunks = [], originalChunks = []
-  let reader, writer, _onFinish
+  let reader, writer, _onFinish, _onError
 
   reader = readline(input, inputEncoding)
 
@@ -19,34 +19,50 @@ const createFileProcessor = ({ input, inputEncoding = 'utf-8' }) => {
     write(queue)
   }
 
+  const tryExec = cb => {
+    try {
+      return cb()
+    } catch (e) {
+      _onError(e)
+    }
+  }
+
   const processor = {
     transform: cb => {
       transformers.push(cb)
       return processor
     },
     writeTo: ({ output, outputEncoding = 'utf-8' }) => {
-      writer = fs.createWriteStream(output, outputEncoding)
+      writer = tryExec(() => fs.createWriteStream(output, outputEncoding))
       return processor
     },
     process: () => {
       reader
-        .onLine(line => {
-          originalChunks.push(line)
-          transformers.forEach(transform => line = transform(line))
-          chunks.push(line)
+        .onLine(line =>
+          tryExec(() => {
+            originalChunks.push(line)
+            transformers.forEach(transform => line = transform(line))
+            chunks.push(line)
+          })
+        )
+
+      reader.onClose(() =>
+        tryExec(() => {
+          if (!writer) return _onFinish()
+
+          write(chunks.slice())
+          writer.on('close', _onFinish)
         })
-
-      reader.onClose(() => {
-        if (!writer) return _onFinish()
-
-        write(chunks.slice())
-        writer.on('close', _onFinish)
-      })
+      )
 
       return processor
     },
     onFinish: cb => {
       _onFinish = () => typeof cb === 'function' && cb({ originalChunks, chunks })
+      return processor
+    },
+    onError: cb => {
+      _onError = err => typeof cb === 'function' && cb(err)
       return processor
     }
   }

@@ -1,5 +1,7 @@
 require('dotenv/config')
 
-const { run } = require('./src/server')
+const bootstrap = require('./bootstrap')
+const server = require('./src/server')
 
-run()
+bootstrap()
+  .then(server.run)
