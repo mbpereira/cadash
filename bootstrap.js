@@ -1,4 +1,6 @@
+const { createReadStream } = require('fs')
 const { join } = require('path')
+const extract = require('unzipper/lib/extract')
 const { createFileProcessor } = require('./src/services/processors/file')
 
 const insightsPath = join('.', 'insights')
@@ -32,7 +34,10 @@ const bootstrap = () => Promise.all([csv('2021'), csv('2020'), csv('2019'), csv(
   .then(files => console.log('Arquivos processados'))
   .catch(console.error)
 
-module.exports = () => {
+module.exports = () => new Promise((res, rej) => {
   console.log('Processando arquivos de dados. Por favor, aguarde!')
-  return bootstrap()
-}
+  const originalFilesPath = join(insightsPath, 'original')
+  createReadStream(join(originalFilesPath, 'original.zip'))
+    .pipe(extract({ path: originalFilesPath }))
+    .on('close', () => res(bootstrap()))
+})
