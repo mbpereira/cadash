@@ -6,7 +6,8 @@ module.exports = {
     console.log('Mapped analytics')
     server.get(createApiRoute('analytics'), async (req, res, next) => {
       try {
-        const data = await analytics.analyzeAllDisponibleYears()
+        const refresh = req.query.refresh
+        const data = await analytics.analyzeAllDisponibleYears(refresh)
         res.status(200).send(data)
       } catch (e) {
         next(e)
@@ -14,7 +15,8 @@ module.exports = {
     })
     server.get(createApiRoute('analytics/:year'), async (req, res, next) => {
       try {
-        const data = await analytics.analyze(req.params.year)
+        const refresh = req.query.refresh
+        const data = await analytics.analyze(req.params.year, refresh)
         res.status(200).send(data)
       } catch (e) {
         next(e)

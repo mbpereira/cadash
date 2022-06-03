@@ -44,13 +44,12 @@ const getMostUsedDatabasesByCountries = rawData => {
     const country = record.country
 
     databases.forEach(db => {
-      const foundDatabase = mostUsedDatabases.find(d => d.database === db && d.country === country)
-      if (foundDatabase) return foundDatabase.count++
+      const foundDatabase = mostUsedDatabases.find(d => d.database === db)
+      if (foundDatabase) return foundDatabase[country] = (foundDatabase[country] || 0) + 1
 
       mostUsedDatabases.push({
         database: db,
-        count: 1,
-        country
+        [country]: 1,
       })
     })
 
@@ -195,23 +194,28 @@ const makeAnalyzes = async pendingAnalyzes => {
 
 const cacheAnalyzes = async uncachedAnalyzes => {
   await Promise.all(uncachedAnalyzes.map(async analyze => {
-    if (!await getCache(analyze.year))
-      await setCache(analyze.year, analyze)
+    await setCache(analyze.year, analyze)
   }))
 }
 
 module.exports = {
-  analyzeAllDisponibleYears: async () => {
+  analyzeAllDisponibleYears: async (refresh) => {
+    if (refresh) {
+      const analyzes = await makeAnalyzes(validYears)
+      await cacheAnalyzes(analyzes)
+      return analyzes
+    }
+
     const pendingAnalyzes = await getPendingAnalyzes()
     const cachedAnalyzes = await getCachedAnalyzes()
     const analyzes = await makeAnalyzes(pendingAnalyzes)
     await cacheAnalyzes(analyzes)
     return [...analyzes, ...cachedAnalyzes]
   },
-  analyze: year => {
+  analyze: (year, refresh) => {
     const cachedAnalyze = getCache(year)
 
-    if (cachedAnalyze)
+    if (cachedAnalyze && !refresh)
       return Promise.resolve(cachedAnalyze)
 
     return read(year)
