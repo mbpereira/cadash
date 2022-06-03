@@ -14,6 +14,10 @@ const endMiddlewares = [
   }
 ]
 
+const staticPaths = [
+  join(__dirname, '..', 'public', 'assets')
+]
+
 const getController = controllerName => require(join(controllersPath, controllerName))
 
 const mapControllers = controllers =>
@@ -24,10 +28,15 @@ const mapMiddlewares = middlewares =>
   middlewares
     .forEach(middleware => server.use(middleware))
 
+const mapStaticPaths = paths =>
+  paths
+    .forEach(path => server.use(express.static(path)))
+
 const run = async () => {
   const controllers = await getAllFileNamesFromDirectory(controllersPath)
 
   mapMiddlewares(startMiddlewares)
+  mapStaticPaths(staticPaths)
   mapControllers(controllers)
   mapMiddlewares(endMiddlewares)
 

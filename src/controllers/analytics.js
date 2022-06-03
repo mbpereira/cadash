@@ -3,6 +3,7 @@ const { createApiRoute } = require('../utils/app')
 
 module.exports = {
   mapRoutes: server => {
+    console.log('Mapped analytics')
     server.get(createApiRoute('analytics'), async (req, res, next) => {
       try {
         const data = await analytics.analyzeAllDisponibleYears()
