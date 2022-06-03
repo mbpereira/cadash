@@ -1,7 +1,7 @@
 const fs = require('fs')
 const { readline } = require('../../utils/fs')
 
-const createFileProcessor = ({ input, inputEncoding = 'utf-8' }) => {
+const createFileReader = ({ input, inputEncoding = 'utf-8' }) => {
   const transformers = [], chunks = [], originalChunks = []
   let reader, writer, _onFinish, _onError
 
@@ -36,7 +36,7 @@ const createFileProcessor = ({ input, inputEncoding = 'utf-8' }) => {
       writer = tryExec(() => fs.createWriteStream(output, outputEncoding))
       return processor
     },
-    process: () => {
+    read: () => {
       reader
         .onLine(line =>
           tryExec(() => {
@@ -71,5 +71,5 @@ const createFileProcessor = ({ input, inputEncoding = 'utf-8' }) => {
 }
 
 module.exports = {
-  createFileProcessor
+  createFileReader
 }
