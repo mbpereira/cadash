@@ -1,4 +1,5 @@
 const { insightCsv } = require('../../utils/app')
+const cache = require('../cache')
 const { createFileReader } = require('../readers/file')
 
 const getMostUsedDatabases = rawData => {
@@ -172,28 +173,40 @@ const analyze = ({ year, records }) => {
   }
 }
 
-const cache = {}
-const setCache = (key, value) => cache[key] = value
-const getCache = key => cache[key]
+const setCache = (key, value) => cache.set(key, value)
+const getCache = key => cache.get(key)
 
 const validYears = ['2021', '2020', '2019', '2018']
+
+const getCachedAnalyzes = async () => {
+  const analyzes = await Promise.all(validYears.map(getCache))
+  return analyzes.filter(analyze => !!analyze)
+}
+
+const getPendingAnalyzes = async () => {
+  const cachedAnalyzes = (await getCachedAnalyzes()).map(a => a.year)
+  return validYears.filter(y => !cachedAnalyzes.includes(y))
+}
+
+const makeAnalyzes = async pendingAnalyzes => {
+  return await Promise.all(pendingAnalyzes.map(read))
+    .then(years => years.map(analyze))
+}
+
+const cacheAnalyzes = async uncachedAnalyzes => {
+  await Promise.all(uncachedAnalyzes.map(async analyze => {
+    if (!await getCache(analyze.year))
+      await setCache(analyze.year, analyze)
+  }))
+}
+
 module.exports = {
   analyzeAllDisponibleYears: async () => {
-    const pendingAnalyzes = validYears
-      .filter(year => !getCache(year))
-
-    const cachedAnalyzes = validYears
-      .map(year => getCache(year))
-      .filter(analyze => !!analyze)
-
-    const analyzes = await Promise.all(pendingAnalyzes.map(read))
-      .then(years => years.map(analyze))
-
-    return analyzes.concat(cachedAnalyzes).map(analyze => {
-      if (!getCache(analyze.year))
-        setCache(analyze.year, analyze)
-      return analyze
-    })
+    const pendingAnalyzes = await getPendingAnalyzes()
+    const cachedAnalyzes = await getCachedAnalyzes()
+    const analyzes = await makeAnalyzes(pendingAnalyzes)
+    await cacheAnalyzes(analyzes)
+    return [...analyzes, ...cachedAnalyzes]
   },
   analyze: year => {
     const cachedAnalyze = getCache(year)

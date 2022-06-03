@@ -11,7 +11,7 @@ module.exports = {
         next(e)
       }
     })
-    server.get(createApiRoute('/analytics/:year'), async (req, res, next) => {
+    server.get(createApiRoute('analytics/:year'), async (req, res, next) => {
       try {
         const data = await analytics.analyze(req.params.year)
         res.status(200).send(data)

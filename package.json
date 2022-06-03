@@ -22,7 +22,7 @@
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "formidable": "^2.0.1",
-    "memjs": "^1.3.0",
+    "memcached": "^2.2.2",
     "unzipper": "^0.10.11"
   }
 }

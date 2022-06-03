@@ -1,7 +1,5 @@
 const analytics = require('./src/services/processors/analytics');
-const { createFileReader } = require('./src/services/readers/file');
-const { join } = require('path')
 
-analytics.analyzeAllDisponibleYears()
-  .then(analised => console.log(analised[0].mostUsedDatabasesByCountries))
+analytics.analyze('2021')
+  .then(analised => console.log(analised))
   .catch(err => console.log('erro', err))
