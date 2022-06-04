@@ -274,8 +274,8 @@ module.exports = {
     await cacheAnalyzes(analyzes)
     return [...analyzes, ...cachedAnalyzes]
   },
-  analyze: (year, refresh) => {
-    const cachedAnalyze = getCache(year)
+  analyze: async (year, refresh) => {
+    const cachedAnalyze = await getCache(year)
 
     if (cachedAnalyze && !refresh)
       return Promise.resolve(cachedAnalyze)

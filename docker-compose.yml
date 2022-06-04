@@ -1,5 +1,16 @@
 services:
+ web:
+  build: .
+  networks:
+   - def
+  ports:
+    - 5000:5000
  memcached:
   image: memcached
   ports: 
    - 11211:11211
+  networks:
+   - def
+networks:
+  def:
+   driver: bridge
