@@ -1,6 +1,8 @@
 const { insightCsv } = require('../../utils/app')
-const cache = require('../cache')
+const { createCacheService } = require('../cache')
 const { createFileReader } = require('../readers/file')
+
+const cacheService = createCacheService()
 
 const getMostUsedDatabases = rawData => {
   return rawData.reduce((mostUsedDatabases, record) => {
@@ -234,8 +236,8 @@ const analyze = ({ year, records }) => {
   }
 }
 
-const setCache = (key, value) => cache.set(key, value)
-const getCache = key => cache.get(key)
+const setCache = (key, value) => cacheService.set(key, value)
+const getCache = key => cacheService.get(key)
 
 const validYears = ['2021', '2020', '2019', '2018']
 
