@@ -2,6 +2,7 @@ const Memcached = require('memcached');
 
 const cache = new Memcached(process.env.MEMCACHED_SERVER)
 
+const oneDay = 3600 * 24
 module.exports = {
   get: key => new Promise((res, rej) => {
     cache.get(key, (err, data) => {
@@ -9,7 +10,7 @@ module.exports = {
       res(data)
     })
   }),
-  set: (key, value, expiresIn = 3600) => new Promise((res, ret) => {
+  set: (key, value, expiresIn = oneDay) => new Promise((res, ret) => {
     cache.set(key, value, expiresIn, err => {
       if (err) return rej(err)
       res()
