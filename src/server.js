@@ -15,7 +15,10 @@ const endMiddlewares = [
 ]
 
 const staticPaths = [
-  join(__dirname, '..', 'public', 'assets')
+  { directory: join(__dirname, '..', 'public', 'assets'), publicUrl: '/assets' },
+  { directory: join(__dirname, '..', 'node_modules', 'chart.js', 'dist'), publicUrl: '/chartjs' },
+  { directory: join(__dirname, '..', 'node_modules', 'bootstrap', 'dist'), publicUrl: '/bootstrap' },
+  { directory: join(__dirname, '..', 'node_modules', 'axios', 'dist'), publicUrl: '/axios' }
 ]
 
 const getController = controllerName => require(join(controllersPath, controllerName))
@@ -30,7 +33,10 @@ const mapMiddlewares = middlewares =>
 
 const mapStaticPaths = paths =>
   paths
-    .forEach(path => server.use(express.static(path)))
+    .forEach(({ directory, publicUrl }) => {
+      console.log('Mapping ', directory)
+      server.use(publicUrl, express.static(directory))
+    })
 
 const run = async () => {
   const controllers = await getAllFileNamesFromDirectory(controllersPath)
