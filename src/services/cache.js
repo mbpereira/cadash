@@ -10,7 +10,7 @@ module.exports = {
       res(data)
     })
   }),
-  set: (key, value, expiresIn = oneDay) => new Promise((res, ret) => {
+  set: (key, value, expiresIn = oneDay) => new Promise((res, rej) => {
     cache.set(key, value, expiresIn, err => {
       if (err) return rej(err)
       res()
