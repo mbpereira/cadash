@@ -1,4 +1,4 @@
-const buildSimpleChart = ({ data, chartId, title, type, getLabel, getValue, displayLegend }) => {
+const buildSimpleChart = ({ data, chartId, title, type, getLabel, getValue, displayLegend, indexAxis = 'x' }) => {
   data = data.sort((a, b) => b.count - a.count)
   const ctx = document.getElementById(chartId).getContext('2d')
   return new Chart(ctx, {
@@ -14,6 +14,7 @@ const buildSimpleChart = ({ data, chartId, title, type, getLabel, getValue, disp
       }]
     },
     options: {
+      indexAxis,
       plugins: {
         title: {
           text: title,

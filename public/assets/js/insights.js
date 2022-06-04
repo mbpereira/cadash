@@ -6,11 +6,12 @@
   const insightLoadingSpinner = document.getElementById('insight_loading_spinner')
   const insightSelectedYear = document.getElementById('insight_year')
   let currentData = []
-  let mostUsedDatabaseChart, mostDesiredDatabaseChart, mostCommonJobsChart
+  let mostUsedDatabaseChart, mostDesiredDatabaseChart, mostCommonJobsChart, mostUsedLanguageChart, mostDesiredLanguageChart
 
   const buildMostUsedDatabaseChart = () => {
     if (mostUsedDatabaseChart)
       mostUsedDatabaseChart.destroy()
+
     mostUsedDatabaseChart = buildSimpleChart({
       data: currentData.mostUsedDatabases,
       chartId: 'most_used_database_chart',
@@ -24,6 +25,7 @@
   const buildMostDesiredDatabaseChart = () => {
     if (mostDesiredDatabaseChart)
       mostDesiredDatabaseChart.destroy()
+
     mostDesiredDatabaseChart = buildSimpleChart({
       data: currentData.mostDesiredDatabases,
       chartId: 'most_desired_database_chart',
@@ -37,14 +39,45 @@
   const buildMostCommonJobsChart = () => {
     if (mostCommonJobsChart)
       mostCommonJobsChart.destroy()
+
     mostCommonJobsChart = buildSimpleChart({
       data: currentData.mostCommonJobs,
       chartId: 'most_common_jobs_chart',
       title: 'Most common jobs',
-      type: 'pie',
+      type: 'bar',
       getLabel: d => d.job,
       getValue: d => d.count,
-      displayLegend: false
+      indexAxis: 'y'
+    })
+  }
+
+  const buildMostUsedLanguageChart = () => {
+    if (mostUsedLanguageChart)
+      mostUsedLanguageChart.destroy()
+
+    mostUsedLanguageChart = buildSimpleChart({
+      data: currentData.mostUsedLanguages,
+      chartId: 'most_used_language_chart',
+      title: 'Most used languages',
+      type: 'bar',
+      getLabel: d => d.language,
+      getValue: d => d.count,
+      indexAxis: 'y'
+    })
+  }
+
+  const buildMostDesiredLanguageChart = () => {
+    if (mostDesiredLanguageChart)
+      mostDesiredLanguageChart.destroy()
+
+    mostDesiredLanguageChart = buildSimpleChart({
+      data: currentData.mostDesiredLanguages,
+      chartId: 'most_desired_language_chart',
+      title: 'Most desired languages',
+      type: 'bar',
+      getLabel: d => d.language,
+      getValue: d => d.count,
+      indexAxis: 'y'
     })
   }
 
@@ -52,6 +85,8 @@
     buildMostUsedDatabaseChart()
     buildMostDesiredDatabaseChart()
     buildMostCommonJobsChart()
+    buildMostUsedLanguageChart()
+    buildMostDesiredLanguageChart()
   }
 
   const loadData = year => {
