@@ -18,7 +18,6 @@ const files = [{
 
 files.forEach(({ file: f, columns }) => {
   const csv = insightCsv(f)
-  let identifiers = []
 
   const reader = createFileReader({ input: csv })
     .transform(line => {
