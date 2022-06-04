@@ -15,7 +15,7 @@ module.exports = {
     // })
     server.get(createApiRoute('analytics/:year'), async (req, res, next) => {
       try {
-        const refresh = req.query.refresh
+        const refresh = req.query.refresh === 'true'
         const data = await analytics.analyze(req.params.year, refresh)
         res.status(200).send(data)
       } catch (e) {
