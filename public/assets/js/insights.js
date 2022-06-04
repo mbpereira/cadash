@@ -5,6 +5,8 @@
 
   const insightLoadingSpinner = document.getElementById('insight_loading_spinner')
   const insightSelectedYear = document.getElementById('insight_year')
+  const insightRefreshBtn = document.getElementById('refresh_insight_year')
+
   let currentData = []
   let mostUsedDatabaseChart, mostDesiredDatabaseChart, mostCommonJobsChart, mostUsedLanguageChart, mostDesiredLanguageChart
 
@@ -89,9 +91,9 @@
     buildMostDesiredLanguageChart()
   }
 
-  const loadData = year => {
+  const loadData = (year, refresh) => {
     insightLoadingSpinner.classList.remove('d-none')
-    http.get(`/api/analytics/${year}`)
+    http.get(`/api/analytics/${year}?refresh=${!!refresh}`)
       .then(({ data }) => currentData = data)
       .then(buildCharts)
       .finally(() => insightLoadingSpinner.classList.add('d-none'))
@@ -103,6 +105,10 @@
 
   window.addEventListener('load', () => {
     loadData(insightSelectedYear.value)
+  })
+
+  insightRefreshBtn.addEventListener('click', () => {
+    loadData(insightSelectedYear.value, true)
   })
 
 })(axios)
