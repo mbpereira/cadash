@@ -9,8 +9,8 @@ const port = process.env.PORT
 const startMiddlewares = []
 
 const endMiddlewares = [
-  (req, res, next, err) => {
-    res.status(err.statusCode).send(err)
+  (err, req, res, next) => {
+    res.status(err.status || 500).send(err)
   }
 ]
 

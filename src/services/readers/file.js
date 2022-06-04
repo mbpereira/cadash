@@ -2,8 +2,13 @@ const fs = require('fs')
 const { readline } = require('../../utils/fs')
 
 const createFileReader = ({ input, inputEncoding = 'utf-8' }) => {
-  const transformers = [], chunks = [], originalChunks = []
-  let reader, writer, _onFinish, _onError
+  const transformerEvents = []
+  const chunks = []
+  const originalChunks = []
+  const onLineEvents = []
+  const onTransformEvents = []
+
+  let reader, writer, _onFinish, _onError, _stopIf
 
   reader = readline(input, inputEncoding)
 
@@ -23,13 +28,18 @@ const createFileReader = ({ input, inputEncoding = 'utf-8' }) => {
     try {
       return cb()
     } catch (e) {
-      _onError(e)
+      if (typeof _onError === 'function') _onError(e)
     }
   }
 
+  const canContinue = () => {
+    if (typeof _stopIf === 'function')
+      return !_stopIf({ chunks, originalChunks })
+    return true
+  }
   const processor = {
     transform: cb => {
-      transformers.push(cb)
+      transformerEvents.push(cb)
       return processor
     },
     writeTo: ({ output, outputEncoding = 'utf-8' }) => {
@@ -40,9 +50,13 @@ const createFileReader = ({ input, inputEncoding = 'utf-8' }) => {
       reader
         .onLine(line =>
           tryExec(() => {
+            onLineEvents.forEach(evt => evt(line))
             originalChunks.push(line)
-            transformers.forEach(transform => line = transform(line))
+            transformerEvents.forEach(evt => line = evt(line))
             chunks.push(line)
+            onTransformEvents.forEach(evt => evt(line))
+            if (!canContinue())
+              reader.close()
           })
         )
 
@@ -63,6 +77,19 @@ const createFileReader = ({ input, inputEncoding = 'utf-8' }) => {
     },
     onError: cb => {
       _onError = err => typeof cb === 'function' && cb(err)
+      return processor
+    },
+    stop: () => reader.close(),
+    onLine: cb => {
+      onLineEvents.push(cb)
+      return processor
+    },
+    onTransform: cb => {
+      onTransformEvents.push(cb)
+      return processor
+    },
+    stopIf: cb => {
+      _stopIf = cb
       return processor
     }
   }

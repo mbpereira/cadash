@@ -38,6 +38,42 @@ const getMostDesiredDatabases = rawData => {
   }, [])
 }
 
+const getMostUsedLanguages = rawData => {
+  return rawData.reduce((mostUsedLanguages, record) => {
+    const languages = record.workedItLanguages.split(';')
+
+    languages.forEach(language => {
+      const foundLanguage = mostUsedLanguages.find(d => d.language === language)
+      if (foundLanguage) return foundLanguage.count++
+
+      mostUsedLanguages.push({
+        language,
+        count: 1
+      })
+    })
+
+    return mostUsedLanguages
+  }, [])
+}
+
+const getMostDesiredLanguages = rawData => {
+  return rawData.reduce((mostDesiredLanguages, record) => {
+    const languages = record.wantToWorkLanguages.split(';')
+
+    languages.forEach(language => {
+      const foundLanguage = mostDesiredLanguages.find(d => d.language === language)
+      if (foundLanguage) return foundLanguage.count++
+
+      mostDesiredLanguages.push({
+        language,
+        count: 1
+      })
+    })
+
+    return mostDesiredLanguages
+  }, [])
+}
+
 const getMostUsedDatabasesByCountries = rawData => {
   return rawData.reduce((mostUsedDatabases, record) => {
     const databases = record.wantToWorkDatabases.split(';')
@@ -76,6 +112,12 @@ const getMostCommonJobs = rawData =>
 
 const schemas = {
   '2021': {
+    'workedItLanguages': {
+      index: 16
+    },
+    'wantToWorkLanguages': {
+      index: 17
+    },
     'workedItDatabases': {
       index: 18,
     },
@@ -90,6 +132,12 @@ const schemas = {
     }
   },
   '2020': {
+    'workedItLanguages': {
+      index: 22
+    },
+    'wantToWorkLanguages': {
+      index: 21
+    },
     'workedItDatabases': {
       index: 12,
     },
@@ -104,6 +152,12 @@ const schemas = {
     }
   },
   '2019': {
+    'workedItLanguages': {
+      index: 43
+    },
+    'wantToWorkLanguages': {
+      index: 44
+    },
     'workedItDatabases': {
       index: 45,
     },
@@ -118,6 +172,12 @@ const schemas = {
     }
   },
   '2018': {
+    'workedItLanguages': {
+      index: 65
+    },
+    'wantToWorkLanguages': {
+      index: 66
+    },
     'workedItDatabases': {
       index: 67,
     },
@@ -168,7 +228,9 @@ const analyze = ({ year, records }) => {
     mostUsedDatabases: getMostUsedDatabases(records),
     mostCommonJobs: getMostCommonJobs(records),
     mostDesiredDatabases: getMostDesiredDatabases(records),
-    mostUsedDatabasesByCountries: getMostUsedDatabasesByCountries(records)
+    mostUsedDatabasesByCountries: getMostUsedDatabasesByCountries(records),
+    mostDesiredLanguages: getMostDesiredLanguages(records),
+    mostUsedLanguages: getMostUsedLanguages(records),
   }
 }
 

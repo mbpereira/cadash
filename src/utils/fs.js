@@ -23,6 +23,9 @@ const readline = (path, encoding = 'utf8') => {
       reader.on('close', cb)
       return _readline
     },
+    close: () => {
+      reader.close()
+    }
   }
 
   return _readline
